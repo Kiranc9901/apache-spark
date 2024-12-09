@@ -1,16 +1,18 @@
-import the data using pyspark
+1) how to import the data using pyspark
 
-df=spark.read.csv("/FileStore/shared_uploads/kiranc9901@gmail.com",header=True,inferSchema=True)
+from pyspark.sql.functions import*
+df=spark.read.csv("dbfs:/FileStore/shared_uploads/kiranc9901@gmail.com/Orders.csv",header=True,inferSchema=True)
 display(df)
 
 #display is databricks function
 
 from pyspark.sql.functions import*
-df=spark.read.csv("/FileStore/shared_uploads/kiranc9901@gmail.com",header=True,inferSchema=True)
+df=spark.read.csv("dbfs:/FileStore/shared_uploads/kiranc9901@gmail.com/Orders.csv",header=True,inferSchema=True)
 df.show()
 
 #df.show() spark functions which shows only first 20 rows 
 
+output:
 +--------------------+----------+---------------+------------+-------------+---------+---------+---------+--------+------------+----------+-----------+
 |              Region|   Country|       ItemType|SalesChannel|OrderPriority|  OrderID|UnitsSold|UnitPrice|UnitCost|TotalRevenue| TotalCost|TotalProfit|
 +--------------------+----------+---------------+------------+-------------+---------+---------+---------+--------+------------+----------+-----------+
@@ -38,5 +40,90 @@ df.show()
 only showing top 20 rows
 
 
+2) Select only the 'OrderID', 'Region', and 'TotalRevenue' columns from the dataset.
+
+df2=df.select("OrderId","Region","TotalRevenue")
+df2.show()
+
+output:
++---------+--------------------+------------+
+|  OrderId|              Region|TotalRevenue|
++---------+--------------------+------------+
+|686800706|Middle East and N...|   3692591.2|
+|185941302|       North America|   464953.08|
+|246222341|Middle East and N...|   387259.76|
+|161442649|                Asia|    683335.4|
+|645713555|  Sub-Saharan Africa|    91853.85|
+|683458888|              Europe|   1959909.6|
+|679414975|  Sub-Saharan Africa|    585010.8|
+|208630645|              Europe|   797634.72|
+|266467225|Central America a...|   374057.68|
+|118598544|Australia and Oce...|    739488.0|
+|451010930|  Sub-Saharan Africa|   329151.36|
+|220003211|              Europe|   411050.52|
+|702186715|              Europe|  1007751.16|
+|544485270|  Sub-Saharan Africa|   1812631.2|
+|714135205|                Asia|    68407.56|
+|448685348|              Europe|    526729.6|
+|405997025|              Europe|  1560950.37|
+|414244067|       North America|    136656.0|
+|821912801|  Sub-Saharan Africa|   122065.76|
+|247802054|  Sub-Saharan Africa|  6007079.03|
++---------+--------------------+------------+
+
+3)Find all orders from the 'Europe' region with a total revenue greater than $500,000.
+
+df3=df.filter((col("Region")=="Europe") & (col("TotalRevenue")>500000))
+df3.show()
+
+output:
++------+--------------+---------------+------------+-------------+---------+---------+---------+--------+------------+----------+-----------+
+|Region|       Country|       ItemType|SalesChannel|OrderPriority|  OrderID|UnitsSold|UnitPrice|UnitCost|TotalRevenue| TotalCost|TotalProfit|
++------+--------------+---------------+------------+-------------+---------+---------+---------+--------+------------+----------+-----------+
+|Europe|       Armenia|         Cereal|      Online|            H|683458888|     9528|    205.7|  117.11|   1959909.6|1115824.08|  844085.52|
+|Europe|    Montenegro|        Clothes|     Offline|            M|208630645|     7299|   109.28|   35.84|   797634.72| 261596.16|  536038.56|
+|Europe|        Greece|      Household|      Online|            C|702186715|     1508|   668.27|  502.54|  1007751.16| 757830.32|  249920.84|
+|Europe|    Montenegro|        Clothes|     Offline|            H|448685348|     4820|   109.28|   35.84|    526729.6|  172748.8|   353980.8|
+|Europe|       Estonia|Office Supplies|      Online|            H|405997025|     2397|   651.21|  524.96|  1560950.37|1258329.12|  302621.25|
+|Europe|      Bulgaria|        Clothes|      Online|            L|880999934|     6313|   109.28|   35.84|   689884.64| 226257.92|  463626.72|
+|Europe|        Greece|      Baby Food|     Offline|            M|294499957|     7937|   255.28|  159.42|  2026157.36|1265316.54|  760840.82|
+|Europe|        Sweden|      Baby Food|      Online|            L|689975583|     7963|   255.28|  159.42|  2032794.64|1269461.46|  763333.18|
+|Europe|       Belarus|Office Supplies|      Online|            L|759279143|     6426|   651.21|  524.96|  4184675.46|3373392.96|   811282.5|
+|Europe|       Armenia|           Meat|      Online|            C|489148938|     8896|   421.89|  364.69|  3753133.44|3244282.24|   508851.2|
+|Europe|        Greece|      Household|      Online|            L|876286971|     1643|   668.27|  502.54|  1097967.61| 825673.22|  272294.39|
+|Europe|       Ukraine|      Cosmetics|      Online|            M|270001733|     8368|    437.2|  263.33|   3658489.6|2203545.44| 1454944.16|
+|Europe|         Italy|Office Supplies|      Online|            M|812295901|     5263|   651.21|  524.96|  3427318.23|2762864.48|  664453.75|
+|Europe|      Portugal|Office Supplies|      Online|            L|535654580|      949|   651.21|  524.96|   617998.29| 498187.04|  119811.25|
+|Europe|       Romania|Office Supplies|     Offline|            C|810871112|     3636|   651.21|  524.96|  2367799.56|1908754.56|   459045.0|
+|Europe|       Austria|Office Supplies|      Online|            L|285341823|     7841|   651.21|  524.96|  5106137.61|4116211.36|  989926.25|
+|Europe|    Luxembourg|      Baby Food|     Offline|            L|817740142|     6335|   255.28|  159.42|   1617198.8| 1009925.7|   607273.1|
+|Europe|        Sweden|     Vegetables|     Offline|            M|947434604|     5808|   154.06|   90.93|   894780.48| 528121.44|  366659.04|
+|Europe|       Iceland|           Meat|     Offline|            H|869397771|     2975|   421.89|  364.69|  1255122.75|1084952.75|   170170.0|
+|Europe|United Kingdom|Office Supplies|      Online|            M|350274455|     2850|   651.21|  524.96|   1855948.5| 1496136.0|   359812.5|
++------+--------------+---------------+------------+-------------+---------+---------+---------+--------+------------+----------+-----------+
+only showing top 20 rows
+
+4) List the distinct item types sold in the 'Middle East and North Africa' region.
+
+df4=df.filter(col("Region")=="Middle East and North Africa").select("ItemType").distinct()
+df4.show()
+
+output:
++---------------+
+|       ItemType|
++---------------+
+|      Baby Food|
+|         Cereal|
+|           Meat|
+|      Household|
+|     Vegetables|
+|      Beverages|
+|Office Supplies|
+|      Cosmetics|
+|  Personal Care|
+|         Fruits|
+|         Snacks|
+|        Clothes|
++---------------+
 
 
